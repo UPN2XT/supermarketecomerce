@@ -28,7 +28,6 @@ public class main {
         ZonedDateTime now = ZonedDateTime.now();
         String checkout = "** Checkout receipt **";
         double totalPrice = 0;
-        boolean isShiped = false;
         for (Product p : products.keySet()) {
             if (p instanceof Expires && ((Expires) p).getExpiryDate().isBefore(now))
                 throw new Exception("product " + p.getName() + "is expired");
@@ -56,8 +55,9 @@ public class main {
         if (!shipments.isEmpty())
             shipingService.ship(shipments, customer);
 
-        System.out.println(checkout + "\n----------------------\n" + "Subtotal " + totalPrice + "\n"
-                + (isShiped ? "Shipping" + shippingPrice + "\n" : "")
+        System.out.println(checkout + "\n----------------------\n" + "Subtotal "
+                + (totalPrice - (shipments.isEmpty() ? 0 : shippingPrice)) + "\n"
+                + (!shipments.isEmpty() ? "Shipping " + shippingPrice + "\n" : "")
                 + "Amount " + totalPrice);
         customer.setBalance(customer.getBalance() - totalPrice);
         System.out.println("Balance left " + customer.getBalance());
